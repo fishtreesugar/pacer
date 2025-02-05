@@ -1,6 +1,6 @@
 defmodule Pacer.Workflow.Dsl do
   defmodule Field do
-    defstruct [:name, :default, :dependencies, :resolver, :virtual?, :doc]
+    defstruct [:name, :default, :dependencies, :resolver, :virtual?, :doc, :redact?]
   end
 
   @field_schema [
@@ -117,6 +117,15 @@ defmodule Pacer.Workflow.Dsl do
       to avoid the extra memory overhead that would be associated with carrying these values downstream if, for example,
       the map returned from `Pacer.Workflow.execute/1` is stored in a long-lived process state; intermediate or transient
       values can cause unnecessary memory bloat if they are carried into process state where they are not neeeded.
+
+      And virtual field will excluded in inspect result.
+      """
+    ],
+    redact?: [
+      default: false,
+      type: :boolean,
+      doc: """
+      Similar to Ecto's `redact`, it will excluded in inspect  result.
       """
     ]
   ]
@@ -130,7 +139,7 @@ defmodule Pacer.Workflow.Dsl do
   }
 
   defmodule BatchField do
-    defstruct [:name, :default, :dependencies, :resolver, :virtual?, :guard, :doc]
+    defstruct [:name, :default, :dependencies, :resolver, :virtual?, :guard, :doc, :redact?]
   end
 
   @batch_field_schema Keyword.merge(

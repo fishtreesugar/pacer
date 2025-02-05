@@ -13,6 +13,7 @@ defmodule Pacer.Workflow.Dsl.Transformers.CodeGeneration do
     pacer_struct_fields: [],
     pacer_dependencies: [],
     pacer_virtual_fields: [],
+    pacer_redact_fields: [],
     pacer_resolvers: []
   }
 
@@ -31,6 +32,9 @@ defmodule Pacer.Workflow.Dsl.Transformers.CodeGeneration do
       end)
       |> update_in([:pacer_virtual_fields], fn v ->
         if field.virtual?, do: [field.name | v], else: v
+      end)
+      |> update_in([:pacer_redact_fields], fn v ->
+        if field.redact?, do: [field.name | v], else: v
       end)
 
     if not is_nil(batch) do
@@ -144,6 +148,7 @@ defmodule Pacer.Workflow.Dsl.Transformers.CodeGeneration do
 
     defstruct_ast =
       quote do
+        @derive {Inspect, except: unquote(info.pacer_virtual_fields ++ info.pacer_redact_fields)}
         defstruct unquote(Enum.reverse(info.pacer_struct_fields))
       end
 
